@@ -1,0 +1,36 @@
+<html>
+   <head>
+      <link rel="icon" href="data:;base64,=">
+      <title> Text_to_Text model </title>
+      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+   </head>
+   <body>
+      <form action="/clr" method="post">
+         <button type="butn_clr" name="butn_clr" id="butn_clr" onclick=myFunction1()>Clear</button>
+      </form>
+      <form action="/entr" id = "btn_entr" method="post">
+         <select name="model_names" id="names">
+            <option value="mistral">mistral</option>
+            <option value="mistral_ru">mistral_ru</option>
+            <option value="sdxlturbo">sdxlturbo</option>
+            <option value="sound">sound</option>
+            <option value="sound_ru">sound_ru</option>
+            <option value="s2t">s2t</option>
+            <option value="ru_en">ru_en</option>
+            <option value="en_ru">en_ru</option>
+         </select>
+         <button type="butn_entr" name="butn_entr" id="butn_entr" style="width: 15%; height: 10%" onclick=myFunction()>Enter</button>
+         <fieldset>
+            <legend>Input something</legend>
+            <textarea name="input" type="text" placeholder="input_text" form="btn_entr" style="font-size:2.5em; width: 100%; height: 20%"> </textarea >
+         </fieldset>
+      </form>
+
+      <fieldset>
+         <legend>Output from model</legend>
+         Your promt: {{ prompt }}
+         <textarea name="output" placeholder="output" id="output_text" style="font-size:2.5em; width: 100%; height: 50%"  readonly="readonly">{{ response }} {{ full_name }}</textarea>
+      </fieldset>
+
+   </body>
+</html>
