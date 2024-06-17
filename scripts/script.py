@@ -2,13 +2,13 @@ import glob
 import ffmpeg_streaming
 import subprocess
 from ffmpeg_streaming import Formats
+import os
 
-for path in glob.glob('../videoFull/*.mp4'):
+for path in glob.glob('../source/*.mp4'):
 
 	video = ffmpeg_streaming.input(path)
-	print(video)
-	name = path.replace('.mp4', '')
-
+	image_path = path.replace('.mp4', '')
+	name = os.path.basename(path.replace('.mp4', ''))
 
 	subprocess.call(["ffmpeg", "-i", path, "-ss", "00:00:00.000", "-vframes", '1', name + ".jpg", "-y"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 	dash = video.dash(Formats.h264())
