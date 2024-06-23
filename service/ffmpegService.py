@@ -19,4 +19,4 @@ def videoToChank(filename):
     dash.auto_generate_representations()
     dash.output(f'../source/{myuuid}/{name}.mpd')
     print("Finish")
-    return 0
+    return {"StatusCode": 200}
