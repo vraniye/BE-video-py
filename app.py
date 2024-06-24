@@ -3,6 +3,7 @@ import os
 import ffmpeg_streaming
 import uuid
 import psycopg
+import json
 
 from flask import Flask, request, redirect, render_template
 from ffmpeg_streaming import Formats
@@ -14,7 +15,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './source/'
 app.config['ALLOWED_EXTENSIONS'] = {'mp4'}
 url = os.getenv('DATABASE_URL')
-#url = 'postgresql://postgres:postgres/localhost:5433/postgres'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -58,6 +58,33 @@ def video_to_chank(filename):
             cursor.execute(CREATE_VIDEO_TABLE)
             cursor.execute(INSERT_VIDEO, (file_name, myuuid,  image_path + ".jpg", f'./source/{myuuid}/{file_name}.mpd'))
     return 'File successfully processed'
+
+
+@app.route('/api/getVideoByUuid/<uuid>', methods=['GET'])
+def get_video_by_uuid(uuid):
+    path = {}
+    with psycopg.connect(url) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(CREATE_VIDEO_TABLE)
+            paths = cursor.execute(GET_PATHS_BY_UUID, (uuid,)).fetchall()
+            for index, (mpd_path, image_path) in enumerate(paths, start=1):
+                path["mpd_path"] = mpd_path
+                path["image_path"] = image_path
+    return json.dumps(path, ensure_ascii=False), 200
+
+
+@app.route('/api/getAllVideoUuid', methods=['GET'])
+def get_all_video_uuid():
+    uuids = {}
+    with psycopg.connect(url) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(CREATE_VIDEO_TABLE)
+            data = cursor.execute(GET_ALL_VIDEO_UUID).fetchall()
+            uuid = []
+            for tuple_pair in data:
+                uuid.extend(tuple_pair)
+            uuids = {"uuids": uuid}
+    return json.dumps(uuids, ensure_ascii=False), 200
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
